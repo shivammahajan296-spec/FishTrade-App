@@ -43,7 +43,11 @@ export default {async fetch(request,env){const url=new URL(request.url),method=r
     if(!result)return json({error:'The ledger was changed by another partner. Export your unsaved data, then refresh.'},409);
     return json({ok:true,revision:result.revision});
    }
-   const financialResponse=await handleFinancialApi(request,env,url);
+   let financialResponse;
+   try{financialResponse=await handleFinancialApi(request,env,url)}catch(e){
+    if(/no such table:\s*(app_config|parties|item_codes|invoices|invoice_items|payments|payment_allocations|ledger_adjustments|financial_events)/i.test(String(e)))return json({error:'Invoice and ledger database migration is not applied. Run npm run migrate:remote, then refresh.'},503);
+    throw e;
+   }
    if(financialResponse)return financialResponse;
    return json({error:'Route not found'},404);
   }
