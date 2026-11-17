@@ -183,7 +183,7 @@ async function correctionInvoice(invoiceId, env) {
 async function deleteInvoice(invoiceId, env) {
   const inv=await env.DB.prepare('SELECT status, correction_of_invoice_id FROM invoices WHERE id=?').bind(invoiceId).first();
   if(!inv)return fail('Invoice not found',404);
-  if(!['draft','finalized'].includes(inv.status))return fail('Only drafts, correction drafts, and unpaid finalized invoices can be deleted.',409);
+  if(!['draft','finalized','void'].includes(inv.status))return fail('Only drafts, correction drafts, void invoices, and unpaid finalized invoices can be deleted.',409);
   const allocated=await env.DB.prepare("SELECT COALESCE(SUM(amount_paise),0) paid FROM payment_allocations WHERE target_type='invoice' AND target_id=?").bind(invoiceId).first();
   if(allocated?.paid>0)return fail('This invoice has an allocated payment. Reallocate or reverse the payment before deleting the invoice.',409);
   const correction=await env.DB.prepare('SELECT id FROM invoices WHERE correction_of_invoice_id=? LIMIT 1').bind(invoiceId).first();
