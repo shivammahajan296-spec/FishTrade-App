@@ -1,0 +1,386 @@
+{
+  "purchases": [
+    {
+      "id": "p1",
+      "date": "2026-07-07",
+      "supplier": "India Fish Company",
+      "bill": "1118",
+      "amount": 231000,
+      "status": "paid",
+      "method": "Cash",
+      "notes": "Paid by Ajay and Abhishek"
+    },
+    {
+      "id": "p2",
+      "date": "2026-07-08",
+      "supplier": "India Fish Company",
+      "bill": "1119",
+      "amount": 6660,
+      "status": "paid",
+      "method": "Cash",
+      "notes": "Shifting charge noted \u20b95,500; Abhishek balance \u20b91,200 \u2014 verify discrepancy"
+    },
+    {
+      "id": "p3",
+      "date": "2026-07-09",
+      "supplier": "India Fish Company",
+      "bill": "1191",
+      "amount": 88000,
+      "status": "paid",
+      "method": "Cash",
+      "notes": "Paid by Abhishek"
+    },
+    {
+      "id": "p4",
+      "date": "2026-07-14",
+      "supplier": "Aahar Fresh and Frozen",
+      "bill": "",
+      "amount": 24250,
+      "status": "paid",
+      "method": "Cash",
+      "notes": "Paid by Ajay"
+    },
+    {
+      "id": "p5",
+      "date": "2026-07-28",
+      "supplier": "India Fish Company",
+      "bill": "1359",
+      "amount": 190000,
+      "status": "paid",
+      "method": "Cash",
+      "notes": "Paid by Abhishek"
+    },
+    {
+      "id": "p6",
+      "date": "2026-08-21",
+      "supplier": "India Fish Company",
+      "bill": "1662",
+      "amount": 156000,
+      "status": "paid",
+      "method": "Cash",
+      "notes": "Partner contribution recorded as \u20b92,00,000 from Abhishek; verify excess"
+    },
+    {
+      "id": "p7",
+      "date": "2026-08-28",
+      "supplier": "India Fish Company",
+      "bill": "",
+      "amount": 190000,
+      "status": "paid",
+      "method": "Bank",
+      "notes": "Ajay bank contribution recorded \u20b91,61,900; verify remaining funding"
+    },
+    {
+      "id": "p8",
+      "date": "2026-09-17",
+      "supplier": "India Fish Company",
+      "bill": "2018",
+      "amount": 69280,
+      "status": "paid",
+      "method": "HDFC company account",
+      "notes": "Paid from company account"
+    },
+    {
+      "id": "p9",
+      "date": "2026-10-04",
+      "supplier": "India Fish Company",
+      "bill": "2259",
+      "amount": 65000,
+      "status": "on_hold",
+      "method": "",
+      "notes": "Pending \u2014 instruction says not to pay"
+    }
+  ],
+  "sales": [
+    {
+      "id": "s1",
+      "number": "20262001",
+      "date": "2026-07-07",
+      "collection": "unknown",
+      "collected": 0,
+      "notes": "Marked DONE in original sheet",
+      "items": [
+        {
+          "name": "Squid",
+          "qty": 300,
+          "rate": 575
+        },
+        {
+          "name": "Sprat",
+          "qty": 300,
+          "rate": 210
+        },
+        {
+          "name": "Mullet",
+          "qty": 300,
+          "rate": 230
+        },
+        {
+          "name": "Mackrel",
+          "qty": 300,
+          "rate": 230
+        },
+        {
+          "name": "Sardine",
+          "qty": 300,
+          "rate": 200
+        },
+        {
+          "name": "Transportation",
+          "qty": 1,
+          "rate": 15000
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "number": "20262003",
+      "date": "2026-07-14",
+      "collection": "unknown",
+      "collected": 0,
+      "notes": "Trout samples",
+      "items": [
+        {
+          "name": "Trout Samples",
+          "qty": 25,
+          "rate": 1250
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "number": "20262002",
+      "date": "2026-07-13",
+      "collection": "unknown",
+      "collected": 0,
+      "notes": "",
+      "items": [
+        {
+          "name": "Mackrel",
+          "qty": 300,
+          "rate": 230
+        },
+        {
+          "name": "Sardine",
+          "qty": 400,
+          "rate": 200
+        },
+        {
+          "name": "Transportation",
+          "qty": 1,
+          "rate": 15000
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "number": "20262004",
+      "date": "2026-07-25",
+      "collection": "unknown",
+      "collected": 0,
+      "notes": "",
+      "items": [
+        {
+          "name": "Mackrel",
+          "qty": 500,
+          "rate": 230
+        },
+        {
+          "name": "Sardine",
+          "qty": 1000,
+          "rate": 200
+        },
+        {
+          "name": "Transportation",
+          "qty": 1,
+          "rate": 15000
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "number": "20262005",
+      "date": "2026-08-16",
+      "collection": "unknown",
+      "collected": 0,
+      "notes": "",
+      "items": [
+        {
+          "name": "Sardine",
+          "qty": 1200,
+          "rate": 200
+        },
+        {
+          "name": "Transportation",
+          "qty": 1,
+          "rate": 15000
+        }
+      ]
+    },
+    {
+      "id": "s6",
+      "number": "20262006",
+      "date": "2026-08-28",
+      "collection": "unknown",
+      "collected": 0,
+      "notes": "Mackrel rejected; excluded from invoice total",
+      "items": [
+        {
+          "name": "Sardine",
+          "qty": 1000,
+          "rate": 200
+        },
+        {
+          "name": "Mackrel",
+          "qty": 520,
+          "rate": 230,
+          "rejected": true
+        },
+        {
+          "name": "Transportation",
+          "qty": 1,
+          "rate": 15000
+        }
+      ]
+    },
+    {
+      "id": "s7",
+      "number": "20262008",
+      "date": "2026-09-17",
+      "collection": "unknown",
+      "collected": 0,
+      "notes": "",
+      "items": [
+        {
+          "name": "Squid",
+          "qty": 250,
+          "rate": 575
+        },
+        {
+          "name": "Transportation",
+          "qty": 1,
+          "rate": 15000
+        }
+      ]
+    },
+    {
+      "id": "s8",
+      "number": "20262007",
+      "date": "2026-09-30",
+      "collection": "unknown",
+      "collected": 0,
+      "notes": "",
+      "items": [
+        {
+          "name": "Mackrel",
+          "qty": 500,
+          "rate": 230
+        },
+        {
+          "name": "Transportation",
+          "qty": 1,
+          "rate": 15000
+        }
+      ]
+    }
+  ],
+  "contributions": [
+    {
+      "id": "c1",
+      "date": "2026-07-07",
+      "partner": "Ajay",
+      "amount": 200000,
+      "method": "Cash",
+      "notes": "Bill 1118"
+    },
+    {
+      "id": "c2",
+      "date": "2026-07-07",
+      "partner": "Abhishek",
+      "amount": 31000,
+      "method": "Cash",
+      "notes": "Bill 1118"
+    },
+    {
+      "id": "c3",
+      "date": "2026-07-08",
+      "partner": "Abhishek",
+      "amount": 1200,
+      "method": "Cash",
+      "notes": "Bill 1119; verify \u20b95,500 shifting charges"
+    },
+    {
+      "id": "c4",
+      "date": "2026-07-09",
+      "partner": "Abhishek",
+      "amount": 88000,
+      "method": "Cash",
+      "notes": "Bill 1191"
+    },
+    {
+      "id": "c5",
+      "date": "2026-07-14",
+      "partner": "Ajay",
+      "amount": 24250,
+      "method": "Cash",
+      "notes": "Aahar"
+    },
+    {
+      "id": "c6",
+      "date": "2026-07-28",
+      "partner": "Abhishek",
+      "amount": 190000,
+      "method": "Cash",
+      "notes": "Bill 1359"
+    },
+    {
+      "id": "c7",
+      "date": "2026-08-21",
+      "partner": "Abhishek",
+      "amount": 200000,
+      "method": "Cash",
+      "notes": "Bill amount \u20b91,56,000; verify difference"
+    },
+    {
+      "id": "c8",
+      "date": "2026-08-28",
+      "partner": "Ajay",
+      "amount": 161900,
+      "method": "Bank",
+      "notes": "Purchase amount \u20b91,90,000; verify difference"
+    }
+  ],
+  "prices": [
+    {
+      "name": "Squid",
+      "cost": 260,
+      "sell": 575
+    },
+    {
+      "name": "Sprat",
+      "cost": 120,
+      "sell": 210
+    },
+    {
+      "name": "Mullet",
+      "cost": 115,
+      "sell": 230
+    },
+    {
+      "name": "Mackrel",
+      "cost": 120,
+      "sell": 230
+    },
+    {
+      "name": "Sardine",
+      "cost": 130,
+      "sell": 200
+    },
+    {
+      "name": "Trout",
+      "cost": null,
+      "sell": null
+    }
+  ],
+  "extraNotes": "Unreconciled \u20b943,600 debit written separately; \u20b92,500 extra from Anish Sharma. Neither is booked as an expense or contribution until verified."
+}
