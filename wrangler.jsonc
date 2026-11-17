@@ -4,6 +4,6 @@
   "compatibility_date": "2026-11-01",
   "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*"] },
   "d1_databases": [
-    {"binding": "DB", "database_name": "fishtrade-ledger", "database_id": "REPLACE_WITH_YOUR_DATABASE_ID", "migrations_dir": "migrations"}
+    {"binding": "DB", "database_name": "fishtrade-ledger", "database_id": "ffbf034b-8065-479a-8290-700c4f9b9508", "migrations_dir": "migrations"}
   ]
 }
