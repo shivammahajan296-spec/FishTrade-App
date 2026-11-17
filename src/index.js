@@ -1,4 +1,5 @@
 // FishTrade Worker: D1-backed shared SQLite ledger with optimistic locking.
+import { handleFinancialApi } from './financial.js';
 const encoder = new TextEncoder();
 const SESSION_SECONDS = 60 * 60 * 24 * 7;
 const json = (data, status = 200, headers = {}) => new Response(JSON.stringify(data), {status, headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...headers}});
@@ -42,6 +43,8 @@ export default {async fetch(request,env){const url=new URL(request.url),method=r
     if(!result)return json({error:'The ledger was changed by another partner. Export your unsaved data, then refresh.'},409);
     return json({ok:true,revision:result.revision});
    }
+   const financialResponse=await handleFinancialApi(request,env,url);
+   if(financialResponse)return financialResponse;
    return json({error:'Route not found'},404);
   }
   if(method!=='GET'&&method!=='HEAD')return new Response('Method Not Allowed',{status:405});

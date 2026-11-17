@@ -11,7 +11,29 @@ A mobile-friendly fish business ledger running on Cloudflare Workers with Cloudf
 - Mobile-responsive layout, touch-sized buttons, horizontal scrolling for tables
 - Single shared sign-in password, secure HttpOnly session cookies, 7-day sessions
 - Optimistic version check to prevent silent overwrites by other browsers
+- Professional A4 invoice creation, draft/finalized workflow, controlled corrections and PDF downloads
+- Debtor and creditor ledgers with bulk payments, manual or oldest-first allocation and unapplied advances
+- Receivables, payables, payment and overdue-invoice dashboard metrics
+- Ten-second authenticated change polling plus refresh-on-focus for multi-device financial updates
 - Initial data: **9 purchases, 8 invoices, 8 contribution rows, 6 fish prices**, sourced from the provided ledger
+
+## Invoice and ledger data model
+
+Migration `0002_invoice_ledgers.sql` adds normalized D1 tables for configuration, parties, item codes, invoices, invoice items, payments, payment allocations, adjustments and synchronization events. Monetary values in these tables are stored as integer paise. The original `ledger` JSON row remains unchanged and continues to power the existing purchases, sales, contribution and price-list workflows.
+
+The seller and default AEOM INDIA LLP buyer details are seeded as configuration/party records instead of being repeated in UI or PDF code. Existing suppliers are made available in the creditor ledger from the legacy purchase data. A generated invoice whose number matches a legacy sale is linked through `legacy_sale_id`; it is not copied into legacy sales and therefore does not create a second sale or stock movement.
+
+Financial writes require the existing authenticated session. Payment requests require a unique idempotency key, and invoice numbers are protected by a database uniqueness constraint. Finalized invoice values are locked; the correction action creates a linked draft and marks the original corrected only when the replacement is finalized.
+
+Before a later deployment, apply the new migration once:
+
+```sh
+npm install
+npm run migrate:remote
+npm run deploy
+```
+
+Do not recreate the existing D1 database. Back it up before applying a production migration. This repository change does not automatically migrate or deploy production.
 
 ## What you need
 
