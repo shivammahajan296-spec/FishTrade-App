@@ -180,6 +180,19 @@ async function correctionInvoice(invoiceId, env) {
   return j({ok:true,id:newId,invoice_number:number},201);
 }
 
+async function voidInvoice(invoiceId, env) {
+  const inv=await env.DB.prepare('SELECT status FROM invoices WHERE id=?').bind(invoiceId).first();
+  if(!inv)return fail('Invoice not found',404);
+  if(inv.status!=='finalized')return fail('Only an unpaid finalized invoice can be deleted. Paid or corrected invoices must remain in the audit trail.',409);
+  const allocated=await env.DB.prepare("SELECT COALESCE(SUM(amount_paise),0) paid FROM payment_allocations WHERE target_type='invoice' AND target_id=?").bind(invoiceId).first();
+  if(allocated?.paid>0)return fail('This invoice has an allocated payment. Reallocate or reverse the payment before deleting the invoice.',409);
+  await env.DB.batch([
+    env.DB.prepare("UPDATE invoices SET status='void',version=version+1,updated_at=datetime('now') WHERE id=? AND status='finalized'").bind(invoiceId),
+    env.DB.prepare("INSERT INTO financial_events (entity_type,entity_id,action) VALUES ('invoice',?,'voided')").bind(invoiceId)
+  ]);
+  return j({ok:true,status:'void'});
+}
+
 async function saveParty(request, env) {
   const b = await request.json().catch(()=>null);
   if (!b || !['customer','supplier'].includes(b.type) || !text(b.name,200)) return fail('Party type and name are required');
@@ -310,7 +323,7 @@ export async function handleFinancialApi(request, env, url) {
   if(path==='/api/parties'&&method==='POST')return saveParty(request,env);
   if(path==='/api/item-codes'&&method==='POST')return saveItemCode(request,env);
   if(path==='/api/payments'&&method==='POST')return savePayment(request,env);
-  const invoiceMatch=path.match(/^\/api\/invoices\/([^/]+)(?:\/(finalize|correct|pdf))?$/);
-  if(invoiceMatch){const invoiceId=decodeURIComponent(invoiceMatch[1]),action=invoiceMatch[2];if(!action&&method==='PUT')return saveInvoice(request,env,invoiceId);if(action==='finalize'&&method==='POST')return finalizeInvoice(invoiceId,env);if(action==='correct'&&method==='POST')return correctionInvoice(invoiceId,env);if(action==='pdf'&&method==='GET')return invoicePdf(invoiceId,env)}
+  const invoiceMatch=path.match(/^\/api\/invoices\/([^/]+)(?:\/(finalize|correct|void|pdf))?$/);
+  if(invoiceMatch){const invoiceId=decodeURIComponent(invoiceMatch[1]),action=invoiceMatch[2];if(!action&&method==='PUT')return saveInvoice(request,env,invoiceId);if(action==='finalize'&&method==='POST')return finalizeInvoice(invoiceId,env);if(action==='correct'&&method==='POST')return correctionInvoice(invoiceId,env);if(action==='void'&&method==='POST')return voidInvoice(invoiceId,env);if(action==='pdf'&&method==='GET')return invoicePdf(invoiceId,env)}
   return null;
 }
