@@ -58,12 +58,25 @@ async function readLegacyPurchases(env) {
   const row = await env.DB.prepare('SELECT data FROM ledger WHERE id=1').first();
   const purchases = parseJson(row?.data,{}).purchases || [];
   return purchases.map(p => ({
-    id:String(p.id), date:String(p.date || ''), supplier:String(p.supplier || ''), bill:String(p.bill || ''),
+    id:String(p.id), date:String(p.date || ''), supplier:String(p.supplier || '').trim(), bill:String(p.bill || ''),
     amount_paise:Math.round(Number(p.amount || 0) * 100), status:String(p.status || ''), notes:String(p.notes || '')
   }));
 }
 
+async function syncLegacySuppliers(env) {
+  await env.DB.prepare(`INSERT OR IGNORE INTO parties (id,type,name)
+    SELECT 'supplier-' || lower(hex(randomblob(8))), 'supplier', supplier
+    FROM (
+      SELECT DISTINCT trim(json_extract(j.value, '$.supplier')) supplier
+      FROM ledger l, json_each(l.data, '$.purchases') j
+      WHERE trim(json_extract(j.value, '$.supplier')) <> ''
+    )`).run();
+}
+
 async function bootstrap(env) {
+  // Purchases use the existing shared ledger. Keep its supplier names available
+  // as normalized parties even when they were added after the one-time migration.
+  await syncLegacySuppliers(env);
   const [cfg, partiesResult, codesResult, invoicesResult, itemsResult, paymentsResult, allocationsResult, adjustmentsResult, eventRow, legacyPurchases] = await Promise.all([
     config(env),
     env.DB.prepare('SELECT * FROM parties WHERE active=1 ORDER BY type, name').all(),
