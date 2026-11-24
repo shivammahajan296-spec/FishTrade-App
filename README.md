@@ -12,7 +12,7 @@ A mobile-friendly fish business ledger running on Cloudflare Workers with Cloudf
 - Single shared sign-in password, secure HttpOnly session cookies, 7-day sessions
 - Optimistic version check to prevent silent overwrites by other browsers
 - Professional A4 invoice creation, draft/finalized workflow, controlled corrections, permanent deletion of drafts, voids and eligible finalized invoices, and PDF downloads
-- Debtor and creditor ledgers with bulk payments, manual or oldest-first allocation and unapplied advances
+- Debtor and creditor ledgers with editable/deletable payments, bulk payments, manual or oldest-first allocation and unapplied advances
 - Receivables, payables, payment and overdue-invoice dashboard metrics
 - Ten-second authenticated change polling plus refresh-on-focus for multi-device financial updates
 - Initial data: **9 purchases, 8 invoices, 8 contribution rows, 6 fish prices**, sourced from the provided ledger

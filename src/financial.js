@@ -284,6 +284,40 @@ async function savePayment(request, env) {
   return j({ok:true,id:paymentId,allocated_paise:amount-remaining,unapplied_paise:remaining},201);
 }
 
+async function updatePayment(request, env, paymentId) {
+  const b=await request.json().catch(()=>null),amount=paise(b?.amount_paise),paymentDate=text(b?.payment_date,10);
+  if(!b||!amount||!isoDate(paymentDate))return fail('Valid payment date and amount are required');
+  const payment=await env.DB.prepare(`SELECT p.id,COALESCE(SUM(a.amount_paise),0) allocated_paise
+    FROM payments p LEFT JOIN payment_allocations a ON a.payment_id=p.id
+    WHERE p.id=? GROUP BY p.id`).bind(paymentId).first();
+  if(!payment)return fail('Payment not found',404);
+  if(amount<payment.allocated_paise)return fail(`Amount cannot be lower than the allocated value of ${(payment.allocated_paise/100).toLocaleString('en-IN',{style:'currency',currency:'INR'})}. Delete and record the payment again to change allocations.`,409);
+  await env.DB.batch([
+    env.DB.prepare('UPDATE payments SET payment_date=?,amount_paise=?,reference=?,notes=? WHERE id=?').bind(paymentDate,amount,text(b.reference,200),text(b.notes,1000),paymentId),
+    env.DB.prepare("INSERT INTO financial_events (entity_type,entity_id,action) VALUES ('payment',?,'updated')").bind(paymentId)
+  ]);
+  return j({ok:true,id:paymentId,allocated_paise:payment.allocated_paise,unapplied_paise:amount-payment.allocated_paise});
+}
+
+async function deletePayment(paymentId, env) {
+  const payment=await env.DB.prepare('SELECT id FROM payments WHERE id=?').bind(paymentId).first();
+  if(!payment)return fail('Payment not found',404);
+  const targets=await env.DB.prepare("SELECT DISTINCT target_id FROM payment_allocations WHERE payment_id=? AND target_type='invoice'").bind(paymentId).all();
+  const statements=[
+    env.DB.prepare('DELETE FROM payment_allocations WHERE payment_id=?').bind(paymentId),
+    env.DB.prepare("DELETE FROM financial_events WHERE entity_type='payment' AND entity_id=?").bind(paymentId),
+    env.DB.prepare('DELETE FROM payments WHERE id=?').bind(paymentId)
+  ];
+  for(const row of targets.results||[])statements.push(env.DB.prepare(`UPDATE invoices SET status=CASE
+    WHEN COALESCE((SELECT SUM(amount_paise) FROM payment_allocations WHERE target_type='invoice' AND target_id=invoices.id),0)>=total_paise THEN 'paid'
+    WHEN COALESCE((SELECT SUM(amount_paise) FROM payment_allocations WHERE target_type='invoice' AND target_id=invoices.id),0)>0 THEN 'partially_paid'
+    ELSE 'finalized' END,updated_at=datetime('now')
+    WHERE id=? AND status IN ('finalized','partially_paid','paid')`).bind(row.target_id));
+  statements.push(env.DB.prepare("INSERT INTO financial_events (entity_type,entity_id,action) VALUES ('system','payments','changed')"));
+  await env.DB.batch(statements);
+  return j({ok:true,deleted:true});
+}
+
 async function refreshInvoiceStatuses(env, ids) {
   for(const invoiceId of [...new Set(ids)]){
     const row=await env.DB.prepare(`SELECT i.total_paise,COALESCE(SUM(a.amount_paise),0) paid FROM invoices i LEFT JOIN payment_allocations a ON a.target_type='invoice' AND a.target_id=i.id WHERE i.id=? GROUP BY i.id`).bind(invoiceId).first();
@@ -342,6 +376,8 @@ export async function handleFinancialApi(request, env, url) {
   if(path==='/api/parties'&&method==='POST')return saveParty(request,env);
   if(path==='/api/item-codes'&&method==='POST')return saveItemCode(request,env);
   if(path==='/api/payments'&&method==='POST')return savePayment(request,env);
+  const paymentMatch=path.match(/^\/api\/payments\/([^/]+)$/);
+  if(paymentMatch){const paymentId=decodeURIComponent(paymentMatch[1]);if(method==='PUT')return updatePayment(request,env,paymentId);if(method==='DELETE')return deletePayment(paymentId,env)}
   const invoiceMatch=path.match(/^\/api\/invoices\/([^/]+)(?:\/(finalize|correct|pdf))?$/);
   if(invoiceMatch){const invoiceId=decodeURIComponent(invoiceMatch[1]),action=invoiceMatch[2];if(!action&&method==='PUT')return saveInvoice(request,env,invoiceId);if(!action&&method==='DELETE')return deleteInvoice(invoiceId,env);if(action==='finalize'&&method==='POST')return finalizeInvoice(invoiceId,env);if(action==='correct'&&method==='POST')return correctionInvoice(invoiceId,env);if(action==='pdf'&&method==='GET')return invoicePdf(invoiceId,env)}
   return null;
